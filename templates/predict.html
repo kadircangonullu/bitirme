@@ -1,22 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fiyat Tahmini</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <style>
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+      .result-card {
+        margin-top: 30px;
+        background: #e6f7ff;
+        border-left: 6px solid #007bff;
+        padding: 20px;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        text-align: center;
+      }
+      @media (max-width: 768px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </head>
   <body>
-    <h2>Araç Fiyat Tahmini</h2>
-    <form method="POST">
-      Yıl: <input type="number" name="year" required /><br />
-      Marka: <input type="text" name="make" required /><br />
-      Kasa Tipi: <input type="text" name="body" required /><br />
-      Şanzıman: <input type="text" name="transmission" required /><br />
-      Durum (1-5):
-      <input type="number" step="0.1" name="condition" required /><br />
-      Kilometre: <input type="number" name="odometer" required /><br />
-      Dış Renk: <input type="text" name="color" required /><br />
-      İç Renk: <input type="text" name="interior" required /><br />
-      <input type="submit" value="Tahmini Göster" />
-    </form>
-    <p><a href="/">Ana Sayfa</a></p>
+    <nav>
+      <div><strong>Car Price App</strong></div>
+      <div>
+        <a href="/">Ana Sayfa</a>
+        <a href="/logout">Çıkış Yap</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <h2>Araç Fiyat Tahmini</h2>
+      <form method="POST" class="form-grid">
+        <div class="form-group">
+          <label for="year">Yıl:</label>
+          <input type="number" name="year" required />
+        </div>
+
+        <div class="form-group">
+          <label for="make">Marka:</label>
+          <input type="text" name="make" required />
+        </div>
+
+        <div class="form-group">
+          <label for="body">Kasa Tipi:</label>
+          <input type="text" name="body" required />
+        </div>
+
+        <div class="form-group">
+          <label for="transmission">Şanzıman:</label>
+          <input type="text" name="transmission" required />
+        </div>
+
+        <div class="form-group">
+          <label for="condition">Durum (1-5):</label>
+          <input type="number" step="0.1" name="condition" required />
+        </div>
+
+        <div class="form-group">
+          <label for="odometer">Kilometre:</label>
+          <input type="number" name="odometer" required />
+        </div>
+
+        <div class="form-group">
+          <label for="color">Dış Renk:</label>
+          <input type="text" name="color" required />
+        </div>
+
+        <div class="form-group">
+          <label for="interior">İç Renk:</label>
+          <input type="text" name="interior" required />
+        </div>
+
+        <div class="form-group" style="grid-column: span 2; text-align: center">
+          <input type="submit" value="Tahmini Göster" />
+        </div>
+      </form>
+
+      {% if predicted_price %}
+      <div class="result-card">
+        <strong>Tahmini Satış Fiyatı:</strong><br />
+        {{ predicted_price }} $
+      </div>
+      <div style="text-align: center; margin-top: 20px">
+        <a href="{{ url_for('similar') }}" class="btn"
+          >Benzer Araçları Göster</a
+        >
+      </div>
+      {% endif %}
+    </div>
   </body>
 </html>

@@ -2,21 +2,36 @@
 <html>
   <head>
     <title>Giriş Yap</title>
+    <link rel="stylesheet" href="/static/style.css" />
   </head>
   <body>
-    <h2>Giriş Yap</h2>
-    <form method="POST">
-      Kullanıcı Adı: <input type="text" name="username" required /><br />
-      Şifre: <input type="password" name="password" required /><br />
-      <input type="submit" value="Giriş" />
-    </form>
-    <p>Hesabınız yok mu? <a href="/register">Kayıt Ol</a></p>
-    {% with messages = get_flashed_messages() %} {% if messages %}
-    <ul>
-      {% for message in messages %}
-      <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %} {% endwith %}
+    <nav>
+      <div><strong>Car Price App</strong></div>
+      <div>
+        <a href="/">Ana Sayfa</a>
+        <a href="/register">Kayıt Ol</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <h2>Giriş Yap</h2>
+      <form method="POST">
+        <label for="username">Kullanıcı Adı:</label>
+        <input type="text" name="username" required />
+
+        <label for="password">Şifre:</label>
+        <input type="password" name="password" required />
+
+        <input type="submit" value="Giriş" />
+      </form>
+
+      {% with messages = get_flashed_messages() %} {% if messages %}
+      <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %} {% endwith %}
+    </div>
   </body>
 </html>

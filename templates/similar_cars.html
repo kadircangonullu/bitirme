@@ -1,25 +1,67 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
   <head>
-    <title>Tahmin Sonucu</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Benzer Araçlar</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <style>
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+      .car-card {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: 0.3s ease-in-out;
+      }
+      .car-card:hover {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      }
+      .car-card h3 {
+        margin-top: 0;
+        font-size: 1.2rem;
+        color: #007bff;
+      }
+      .car-card p {
+        margin: 6px 0;
+      }
+    </style>
   </head>
   <body>
-    <h2>Tahmini Fiyat: ${{ prediction }}</h2>
-    <h3>Benzer Araçlar</h3>
-    <table border="1">
-      <tr>
-        {% for key in cars[0].keys() %}
-        <th>{{ key }}</th>
+    <nav>
+      <div><strong>Car Price App</strong></div>
+      <div>
+        <a href="/">Ana Sayfa</a>
+        <a href="/predict">Tahmin</a>
+        <a href="/logout">Çıkış Yap</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <h2>Benzer Fiyattaki Araçlar</h2>
+      {% if cars %}
+      <div class="card-grid">
+        {% for car in cars %}
+        <div class="car-card">
+          <h3>{{ car.year }} {{ car.make }} {{ car.model }}</h3>
+          <p><strong>Fiyat:</strong> {{ car.sellingprice }} $</p>
+          <p><strong>Kasa:</strong> {{ car.body }}</p>
+          <p><strong>Şanzıman:</strong> {{ car.transmission }}</p>
+          <p><strong>Kilometre:</strong> {{ car.odometer }}</p>
+          <p><strong>Renk:</strong> {{ car.color }}</p>
+          <p><strong>İç Renk:</strong> {{ car.interior }}</p>
+        </div>
         {% endfor %}
-      </tr>
-      {% for car in cars %}
-      <tr>
-        {% for value in car.values() %}
-        <td>{{ value }}</td>
-        {% endfor %}
-      </tr>
-      {% endfor %}
-    </table>
-    <p><a href="/predict">Yeni Tahmin Yap</a> | <a href="/">Ana Sayfa</a></p>
+      </div>
+      {% else %}
+      <p>Benzer araç bulunamadı.</p>
+      {% endif %}
+    </div>
   </body>
 </html>

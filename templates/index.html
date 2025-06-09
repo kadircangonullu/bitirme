@@ -5,14 +5,29 @@
     <link rel="stylesheet" href="/static/style.css" />
   </head>
   <body>
-    <h1>Hoş Geldiniz!</h1>
-    {% if 'username' in session %}
-    <p>Merhaba, {{ session['username'] }}!</p>
-    <a href="/predict">Tahmin Yap</a> |
-    <a href="/logout">Çıkış Yap</a>
-    {% else %}
-    <a href="/login">Giriş Yap</a> |
-    <a href="/register">Kayıt Ol</a>
-    {% endif %}
+    <nav>
+      <div><strong>Car Price App</strong></div>
+      <div>
+        {% if 'username' in session %}
+        <a href="/predict">Tahmin Yap</a>
+        <a href="/logout">Çıkış Yap</a>
+        {% else %}
+        <a href="/login">Giriş Yap</a>
+        <a href="/register">Kayıt Ol</a>
+        {% endif %}
+      </div>
+    </nav>
+
+    <div class="container">
+      <h1>Hoş Geldiniz!</h1>
+      {% if 'username' in session %}
+      <p>
+        Merhaba, <strong>{{ session['username'] }}</strong>. Tahmin sayfasına
+        giderek araç fiyatını öğrenebilirsin.
+      </p>
+      {% else %}
+      <p>Fiyat tahmini yapmak için lütfen giriş yapın ya da kayıt olun.</p>
+      {% endif %}
+    </div>
   </body>
 </html>

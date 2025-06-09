@@ -78,6 +78,8 @@ def logout():
 def predict():
     if 'username' not in session:
         return redirect(url_for('login'))
+    
+    predicted_price = None
 
     if request.method == 'POST':
         year = int(request.form["year"])
@@ -106,18 +108,28 @@ def predict():
         }
 
         input_df = pd.DataFrame([data])[model_columns]
-        predicted_price = pipeline.predict(input_df)[0]
+        predicted_price = round(pipeline.predict(input_df)[0], 2)
+        
+        # Tahmini fiyatı session’a koyarsan benzer araçlar için kolay olur
+        session['predicted_price'] = float(predicted_price)
 
-        # Benzer araçlar
-        lower = predicted_price * 0.9
-        upper = predicted_price * 1.1
-        similar = df[(df['sellingprice'] >= lower) & (df['sellingprice'] <= upper)].head(10)
+    return render_template("predict.html", predicted_price=predicted_price)
 
-        return render_template("similar_cars.html",
-                               prediction=round(predicted_price, 2),
-                               cars=similar.to_dict(orient="records"))
+@app.route('/similar')
+def similar():
+    if 'username' not in session or 'predicted_price' not in session:
+        return redirect(url_for('login'))
 
-    return render_template("predict.html")
+    predicted_price = session['predicted_price']
+    lower = predicted_price * 0.9
+    upper = predicted_price * 1.1
+
+    similar = df[(df['sellingprice'] >= lower) & (df['sellingprice'] <= upper)].head(10)
+
+    return render_template("similar_cars.html",
+                           prediction=predicted_price,
+                           cars=similar.to_dict(orient="records"))
+
 
 
 if __name__ == '__main__':
