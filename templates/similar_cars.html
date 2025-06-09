@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tahmin Sonucu</title>
+  </head>
+  <body>
+    <h2>Tahmini Fiyat: ${{ prediction }}</h2>
+    <h3>Benzer Araçlar</h3>
+    <table border="1">
+      <tr>
+        {% for key in cars[0].keys() %}
+        <th>{{ key }}</th>
+        {% endfor %}
+      </tr>
+      {% for car in cars %}
+      <tr>
+        {% for value in car.values() %}
+        <td>{{ value }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </table>
+    <p><a href="/predict">Yeni Tahmin Yap</a> | <a href="/">Ana Sayfa</a></p>
+  </body>
+</html>

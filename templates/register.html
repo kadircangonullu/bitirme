@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Kayıt Ol</title>
+  </head>
+  <body>
+    <h2>Kayıt Ol</h2>
+    <form method="POST">
+      Kullanıcı Adı: <input type="text" name="username" required /><br />
+      Şifre: <input type="password" name="password" required /><br />
+      <input type="submit" value="Kayıt Ol" />
+    </form>
+    <p>Zaten hesabınız var mı? <a href="/login">Giriş Yap</a></p>
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <ul>
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %} {% endwith %}
+  </body>
+</html>

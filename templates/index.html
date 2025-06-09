@@ -1,26 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Araç Fiyat Tahmini</title>
+    <title>Ana Sayfa</title>
+    <link rel="stylesheet" href="/static/style.css" />
   </head>
   <body>
-    <h2>Araç Fiyat Tahmin Formu</h2>
-    <form action="/predict" method="post">
-      Yıl: <input type="number" name="year" /><br />
-      Marka (make): <input type="text" name="make" /><br />
-      Kasa Tipi (body): <input type="text" name="body" /><br />
-      Şanzıman (transmission): <input type="text" name="transmission" /><br />
-      Durum (condition):
-      <input type="number" step="0.1" name="condition" /><br />
-      Kilometre (odometer):
-      <input type="number" step="1" name="odometer" /><br />
-      Dış Renk (color): <input type="text" name="color" /><br />
-      İç Renk (interior): <input type="text" name="interior" /><br />
-      <input type="submit" value="Tahmini Göster" />
-    </form>
-
-    {% if prediction %}
-    <h3>Tahmini Satış Fiyatı: ${{ prediction }}</h3>
+    <h1>Hoş Geldiniz!</h1>
+    {% if 'username' in session %}
+    <p>Merhaba, {{ session['username'] }}!</p>
+    <a href="/predict">Tahmin Yap</a> |
+    <a href="/logout">Çıkış Yap</a>
+    {% else %}
+    <a href="/login">Giriş Yap</a> |
+    <a href="/register">Kayıt Ol</a>
     {% endif %}
   </body>
 </html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Giriş Yap</title>
+  </head>
+  <body>
+    <h2>Giriş Yap</h2>
+    <form method="POST">
+      Kullanıcı Adı: <input type="text" name="username" required /><br />
+      Şifre: <input type="password" name="password" required /><br />
+      <input type="submit" value="Giriş" />
+    </form>
+    <p>Hesabınız yok mu? <a href="/register">Kayıt Ol</a></p>
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <ul>
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %} {% endwith %}
+  </body>
+</html>
