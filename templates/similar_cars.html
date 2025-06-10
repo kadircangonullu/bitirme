@@ -9,33 +9,6 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <style>
-      .card-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-        margin-top: 20px;
-      }
-      .car-card {
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        padding: 20px;
-        background: #fff;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        transition: 0.3s ease-in-out;
-      }
-      .car-card:hover {
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-      }
-      .car-card h3 {
-        margin-top: 0;
-        font-size: 1.2rem;
-        color: #007bff;
-      }
-      .car-card p {
-        margin: 6px 0;
-      }
-    </style>
   </head>
   <body>
     <nav>
@@ -53,17 +26,30 @@
 
     <div class="container">
       <h2>Benzer Fiyattaki Araçlar</h2>
+      <p><strong>Tahmini fiyat:</strong> {{ "%.2f"|format(prediction) }} $</p>
+
       {% if cars %}
       <div class="card-grid">
         {% for car in cars %}
         <div class="car-card">
-          <h3>{{ car.year }} {{ car.make }} {{ car.model }}</h3>
-          <p><strong>Fiyat:</strong> {{ car.sellingprice }} $</p>
-          <p><strong>Kasa:</strong> {{ car.body }}</p>
-          <p><strong>Şanzıman:</strong> {{ car.transmission }}</p>
-          <p><strong>Kilometre:</strong> {{ car.odometer }}</p>
-          <p><strong>Renk:</strong> {{ car.color }}</p>
-          <p><strong>İç Renk:</strong> {{ car.interior }}</p>
+          <div>
+            <h3>{{ car.year }} {{ car.make }} {{ car.model }}</h3>
+            <p><strong>Fiyat:</strong> {{ car.sellingprice }} $</p>
+            <p><strong>Kasa:</strong> {{ car.body }}</p>
+            <p><strong>Şanzıman:</strong> {{ car.transmission }}</p>
+            <p><strong>Kilometre:</strong> {{ car.odometer }}</p>
+            <p><strong>Renk:</strong> {{ car.color }}</p>
+            <p><strong>İç Renk:</strong> {{ car.interior }}</p>
+          </div>
+          <div class="card-actions">
+            <button
+              class="btn-details"
+              data-car="{{ car | tojson | safe }}"
+              onclick="showModal(this)"
+            >
+              Detayları Gör
+            </button>
+          </div>
         </div>
         {% endfor %}
       </div>
@@ -71,5 +57,44 @@
       <p>Benzer araç bulunamadı.</p>
       {% endif %}
     </div>
+
+    <!-- Modal -->
+    <div id="detailModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3 id="modalTitle">Araç Detayı</h3>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+
+    <script>
+      function showModal(button) {
+        const car = JSON.parse(button.getAttribute("data-car"));
+        document.getElementById("modalTitle").innerText = `${car.year} ${
+          car.make
+        } ${car.model || ""}`;
+        document.getElementById("modalBody").innerHTML = `
+          <p><strong>Fiyat:</strong> ${car.sellingprice} $</p>
+          <p><strong>Kasa:</strong> ${car.body}</p>
+          <p><strong>Şanzıman:</strong> ${car.transmission}</p>
+          <p><strong>Kilometre:</strong> ${car.odometer}</p>
+          <p><strong>Renk:</strong> ${car.color}</p>
+          <p><strong>İç Renk:</strong> ${car.interior}</p>
+          <p><strong>Durum:</strong> ${car.condition}</p>
+        `;
+        document.getElementById("detailModal").style.display = "block";
+      }
+
+      function closeModal() {
+        document.getElementById("detailModal").style.display = "none";
+      }
+
+      window.onclick = function (event) {
+        const modal = document.getElementById("detailModal");
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+    </script>
   </body>
 </html>

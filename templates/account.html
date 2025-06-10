@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hesabım</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      .history-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 30px;
+      }
+      .history-table th,
+      .history-table td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: left;
+      }
+      .history-table th {
+        background-color: #f0f0f0;
+      }
+      .password-form {
+        margin-top: 40px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="logo">
+        <img src="/static/logo.png" alt="logo" height="24" />
+        SmartCar AI
+      </div>
+      <div class="nav-links">
+        <a href="{{ url_for('index') }}">🏠 Anasayfa</a>
+        <a href="{{ url_for('predict') }}">📊 Tahmin</a>
+        <a href="{{ url_for('logout') }}">🚪 Çıkış</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <h2>👤 Hoşgeldin, {{ username }}</h2>
+
+      <h3>Önceki Tahminlerin</h3>
+      {% if predictions %}
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Tarih</th>
+            <th>Tahmini Fiyat</th>
+            <th>Detay</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pred in predictions %}
+          <tr>
+            <td>{{ pred.timestamp }}</td>
+            <td>{{ pred.price }} $</td>
+            <td>
+              <button
+                class="btn-details"
+                data-car="{{ pred.data | tojson | safe }}"
+                data-price="{{ pred.price }}"
+                onclick="showPredictionModal(this)"
+              >
+                Detaylar
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>Henüz bir tahmin yapmadın.</p>
+      {% endif %} {% with messages = get_flashed_messages() %} {% if messages %}
+      <ul style="color: red">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %} {% endwith %}
+
+      <div class="password-form">
+        <h3>Şifre Değiştir</h3>
+        <form method="post" action="{{ url_for('change_password') }}">
+          <label for="old">Mevcut Şifre:</label>
+          <input type="password" name="old_password" required />
+          <label for="new">Yeni Şifre:</label>
+          <input type="password" name="new_password" required />
+          <input type="submit" value="Şifreyi Güncelle" />
+        </form>
+      </div>
+    </div>
+
+    <div id="detailModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3 id="modalTitle">Tahmin Detayı</h3>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+
+    <script>
+      function showPredictionModal(button) {
+        const data = JSON.parse(button.getAttribute("data-car"));
+        const price = button.getAttribute("data-price");
+
+        document.getElementById(
+          "modalTitle"
+        ).innerText = `Tahmini Fiyat: ${price} $`;
+
+        let html = "";
+        for (const [key, value] of Object.entries(data)) {
+          html += `<p><strong>${key}:</strong> ${value}</p>`;
+        }
+
+        document.getElementById("modalBody").innerHTML = html;
+        document.getElementById("detailModal").style.display = "block";
+      }
+
+      function closeModal() {
+        document.getElementById("detailModal").style.display = "none";
+      }
+
+      window.onclick = function (event) {
+        const modal = document.getElementById("detailModal");
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+    </script>
+  </body>
+</html>

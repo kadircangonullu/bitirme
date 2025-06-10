@@ -1,4 +1,5 @@
-# app.py
+import json
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import pandas as pd
 import joblib
@@ -21,8 +22,19 @@ if not os.path.exists("users.db"):
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
     c.execute("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, password TEXT)")
+    # Yeni tablo: kullanıcı tahmin geçmişi
+    c.execute("""
+        CREATE TABLE predictions (
+            id INTEGER PRIMARY KEY,
+            username TEXT,
+            price REAL,
+            data TEXT,
+            timestamp TEXT
+        )
+    """)
     conn.commit()
     conn.close()
+
 
 # Ana Sayfa
 @app.route('/')
@@ -63,7 +75,7 @@ def login():
         conn.close()
         if user:
             session['username'] = username
-            return redirect(url_for('predict'))
+            return redirect(url_for('index'))
         else:
             flash("Hatalı giriş bilgisi.")
             return redirect(url_for('login'))
@@ -114,8 +126,45 @@ def predict():
         
         # Tahmini fiyatı session’a koyarsan benzer araçlar için kolay olur
         session['predicted_price'] = float(predicted_price)
+        
+        record_data = json.dumps(data)
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        price = float(predicted_price)
+
+        conn = sqlite3.connect("users.db")
+        c = conn.cursor()
+        c.execute("""INSERT INTO predictions (username, price, data, timestamp)
+                    VALUES (?, ?, ?, ?)""", (session['username'], price, record_data, timestamp))
+        conn.commit()
+        conn.close()
 
     return render_template("predict.html", predicted_price=predicted_price)
+
+@app.route('/account')
+def account():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("SELECT price, data, timestamp FROM predictions WHERE username = ?", (session['username'],))
+    rows = c.fetchall()
+    conn.close()
+
+    predictions = []
+    for row in rows:
+        try:
+            data_dict = json.loads(row[1])  # ← Burada str -> dict
+        except json.JSONDecodeError:
+            data_dict = {}
+        predictions.append({
+            "price": float(row[0]),
+            "data": data_dict,
+            "timestamp": row[2]
+        })
+
+    return render_template("account.html", username=session['username'], predictions=predictions)
+
 
 @app.route('/similar')
 def similar():
@@ -132,12 +181,31 @@ def similar():
                            prediction=predicted_price,
                            cars=similar.to_dict(orient="records"))
 
-@app.route('/account')
-def account():
+
+@app.route('/change_password', methods=['POST'])
+def change_password():
     if 'username' not in session:
         return redirect(url_for('login'))
 
-    return render_template("account.html", username=session['username'])
+    old_password = request.form['old_password']
+    new_password = request.form['new_password']
+    username = session['username']
+
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("SELECT password FROM users WHERE username = ?", (username,))
+    row = c.fetchone()
+
+    if row and row[0] == old_password:
+        c.execute("UPDATE users SET password = ? WHERE username = ?", (new_password, username))
+        conn.commit()
+        conn.close()
+        flash("Şifreniz başarıyla güncellendi.")
+    else:
+        conn.close()
+        flash("Eski şifre hatalı. Lütfen tekrar deneyin.")
+
+    return redirect(url_for('account'))
 
 
 
