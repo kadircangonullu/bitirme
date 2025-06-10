@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fiyat Tahmini</title>
     <link rel="stylesheet" href="/static/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <style>
       .form-grid {
         display: grid;
@@ -33,10 +37,15 @@
   </head>
   <body>
     <nav>
-      <div><strong>Car Price App</strong></div>
-      <div>
-        <a href="/">Ana Sayfa</a>
-        <a href="/logout">Çıkış Yap</a>
+      <div class="logo">
+        <img src="/static/logo.png" alt="logo" height="24" />
+        SmartCar AI
+      </div>
+      <div class="nav-links">
+        <a href="{{ url_for('index') }}">🏠 Anasayfa</a>
+        <a href="{{ url_for('predict') }}">📊 Tahmin</a>
+        <a href="{{ url_for('account') }}">👤 Hesabım</a>
+        <a href="{{ url_for('logout') }}">🚪 Çıkış</a>
       </div>
     </nav>
 

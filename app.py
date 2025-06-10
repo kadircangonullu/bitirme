@@ -27,6 +27,8 @@ if not os.path.exists("users.db"):
 # Ana Sayfa
 @app.route('/')
 def index():
+    if 'username' not in session:
+        return redirect(url_for('login'))
     return render_template("index.html")
 
 # Kayıt Ol
@@ -129,6 +131,13 @@ def similar():
     return render_template("similar_cars.html",
                            prediction=predicted_price,
                            cars=similar.to_dict(orient="records"))
+
+@app.route('/account')
+def account():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    return render_template("account.html", username=session['username'])
 
 
 

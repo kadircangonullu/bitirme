@@ -5,12 +5,16 @@ body {
   padding: 0;
   background-color: #f4f6f8;
   color: #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
+  flex-grow: 1;
 }
 
 h1,
@@ -21,24 +25,49 @@ h3 {
 
 /* Navigasyon */
 nav {
-  background-color: #007bff;
+  background-color: #0d47a1;
   color: #fff;
   padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  flex-wrap: wrap;
+}
+
+nav .nav-links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 nav a {
   color: #fff;
   margin-left: 16px;
   text-decoration: none;
-  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.3s;
+  font-weight: 500;
 }
 
 nav a:hover {
-  text-decoration: underline;
+  color: #ffeb3b;
+}
+
+nav .logo {
+  font-size: 1.4em;
+  font-weight: bold;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 /* Formlar */
@@ -69,7 +98,7 @@ input[type="password"] {
 }
 
 input[type="submit"] {
-  background-color: #007bff;
+  background-color: #0d47a1;
   color: white;
   padding: 12px 20px;
   border: none;
@@ -79,13 +108,13 @@ input[type="submit"] {
 }
 
 input[type="submit"]:hover {
-  background-color: #0056b3;
+  background-color: #0b3c91;
 }
 
 /* Bilgilendirme Kutusu */
 .result-card {
   background-color: #e9f5ff;
-  border-left: 6px solid #007bff;
+  border-left: 6px solid #0d47a1;
   padding: 20px;
   margin-top: 30px;
   font-size: 1.2em;
@@ -114,7 +143,7 @@ input[type="submit"]:hover {
 }
 
 .car-card h3 {
-  color: #007bff;
+  color: #0d47a1;
   font-size: 1.25rem;
   margin-bottom: 10px;
 }
@@ -129,14 +158,27 @@ input[type="submit"]:hover {
     flex-direction: column;
     align-items: flex-start;
   }
-  nav a {
-    margin: 8px 0 0;
+
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 10px;
   }
-  .form-grid {
-    grid-template-columns: 1fr;
+
+  .nav-links a {
+    margin: 0;
   }
 }
 
+nav a {
+  margin: 8px 0 0;
+}
+.form-grid {
+  grid-template-columns: 1fr;
+}
+
+/* Buton */
 .btn {
   display: inline-block;
   padding: 10px 20px;
@@ -146,6 +188,17 @@ input[type="submit"]:hover {
   border-radius: 6px;
   transition: background-color 0.3s ease;
 }
+
 .btn:hover {
   background-color: #0056b3;
+}
+
+/* Footer */
+footer {
+  background-color: #f0f0f0;
+  text-align: center;
+  padding: 20px 0;
+  font-size: 14px;
+  margin-top: auto;
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.1);
 }

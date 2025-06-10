@@ -1,33 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
   <head>
-    <title>Ana Sayfa</title>
-    <link rel="stylesheet" href="/static/style.css" />
+    <meta charset="UTF-8" />
+    <title>OtoDeğer | Araç Fiyat Tahmin Sistemi</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
     <nav>
-      <div><strong>Car Price App</strong></div>
-      <div>
-        {% if 'username' in session %}
-        <a href="/predict">Tahmin Yap</a>
-        <a href="/logout">Çıkış Yap</a>
-        {% else %}
-        <a href="/login">Giriş Yap</a>
-        <a href="/register">Kayıt Ol</a>
-        {% endif %}
+      <div class="logo">
+        <img src="/static/logo.png" alt="logo" height="24" />
+        SmartCar AI
+      </div>
+      <div class="nav-links">
+        <a href="{{ url_for('index') }}">🏠 Anasayfa</a>
+        <a href="{{ url_for('predict') }}">📊 Tahmin</a>
+        <a href="{{ url_for('account') }}">👤 Hesabım</a>
+        <a href="{{ url_for('logout') }}">🚪 Çıkış</a>
       </div>
     </nav>
 
     <div class="container">
-      <h1>Hoş Geldiniz!</h1>
-      {% if 'username' in session %}
-      <p>
-        Merhaba, <strong>{{ session['username'] }}</strong>. Tahmin sayfasına
-        giderek araç fiyatını öğrenebilirsin.
-      </p>
-      {% else %}
-      <p>Fiyat tahmini yapmak için lütfen giriş yapın ya da kayıt olun.</p>
-      {% endif %}
+      <section class="hero">
+        <h1>Hoş Geldiniz!</h1>
+        <p>
+          <strong>OtoDeğer</strong>, yapay zeka destekli araç fiyat tahmin
+          platformudur. Arabaların piyasa değerlerini öğrenin, karar verirken
+          emin olun.
+        </p>
+        <a href="{{ url_for('predict') }}" class="cta-button"
+          >Tahmin Yapmaya Başla</a
+        >
+      </section>
+
+      <section class="intro">
+        <h2><i class="fas fa-chart-line"></i> Akıllı Fiyat Tahmini</h2>
+        <p>
+          Gelişmiş XGBoost modeli ve veri bilimi teknikleri ile desteklenen
+          platformumuz, size en doğru ikinci el araç fiyat tahminlerini sunar.
+        </p>
+      </section>
+
+      <section class="gallery">
+        <h2><i class="fas fa-car"></i> Galerimizden</h2>
+        <div class="gallery-grid">
+          <img
+            src="https://cdn.ototeknikveri.com/Files/gallery/Big/2691108556-2016-ford-vignale-cenevre-resim-galerisi.jpg"
+            alt="Araç 1"
+          />
+          <img
+            src="https://image5.sahibinden.com/staticContent/vehicleStockImagesV2/1728/ffffff/x_1216_684_28464001728-42d823620028a817c7e48598a3a21aaa.jpg"
+            alt="Araç 2"
+          />
+          <img
+            src="https://www.arabalar.com.tr/wp-content/uploads/images/model/200x150/ford/puma/puma-111.jpg"
+            alt="Araç 3"
+          />
+          <img
+            src="https://www.kargohaber.com/d/other/ford-tourneo-custom-hibrit.jpg"
+            alt="Araç 4"
+          />
+        </div>
+      </section>
+
+      <section class="about">
+        <h2><i class="fas fa-info-circle"></i> Hakkımızda</h2>
+        <p>
+          OtoDeğer, bilgisayar mühendisliği öğrencileri tarafından geliştirilen
+          bir bitirme projesidir. Hedefimiz, ikinci el araç piyasasında hem
+          satıcıya hem alıcıya güvenilir fiyat öngörüleri sunmaktır.
+        </p>
+      </section>
     </div>
+
+    <footer>
+      <p>&copy; 2025 OtoDeğer. Tüm haklar saklıdır.</p>
+    </footer>
   </body>
 </html>
