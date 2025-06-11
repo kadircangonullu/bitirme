@@ -67,7 +67,7 @@
             <td>
               <button
                 class="btn-details"
-                data-car="{{ pred.data | tojson | safe }}"
+                data-car='{{ pred.data | tojson | safe | escape }}'
                 data-price="{{ pred.price }}"
                 onclick="showPredictionModal(this)"
               >
