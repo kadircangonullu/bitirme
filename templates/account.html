@@ -65,12 +65,11 @@
             <td>{{ pred.timestamp }}</td>
             <td>{{ pred.price }} $</td>
             <td>
-              <button
+              <button 
                 class="btn-details"
-                data-car='{{ pred.data | tojson | safe | escape }}'
+                data-car="{{ pred.data | tojson | forceescape }}"
                 data-price="{{ pred.price }}"
-                onclick="showPredictionModal(this)"
-              >
+                onclick="showPredictionModal(this)">
                 Detaylar
               </button>
             </td>
@@ -105,24 +104,39 @@
         <span class="close" onclick="closeModal()">&times;</span>
         <h3 id="modalTitle">Tahmin Detayı</h3>
         <div id="modalBody"></div>
+        <div id="recommendations"></div>
       </div>
     </div>
 
     <script>
       function showPredictionModal(button) {
-        const data = JSON.parse(button.getAttribute("data-car"));
-        const price = button.getAttribute("data-price");
+        const raw = button.dataset.car;
+        const data = JSON.parse(raw.replace(/&quot;/g, '"'));
+        const price = parseFloat(button.dataset.price);
 
-        document.getElementById(
-          "modalTitle"
-        ).innerText = `Tahmini Fiyat: ${price} $`;
+        document.getElementById("modalTitle").innerText = `Tahmini Fiyat: ${price} $`;
 
         let html = "";
         for (const [key, value] of Object.entries(data)) {
           html += `<p><strong>${key}:</strong> ${value}</p>`;
         }
-
         document.getElementById("modalBody").innerHTML = html;
+
+        fetch(`/api/similar_for_price/${price}`)
+          .then(res => res.json())
+          .then(similar => {
+            let recHtml = '<h4>Önerilen Benzer Araçlar</h4>';
+            similar.forEach(car => {
+              recHtml += `
+                <div style="margin-bottom:12px;padding:8px;border-bottom:1px solid #ccc">
+                  <strong>${car.year} ${car.make} ${car.model}</strong><br>
+                  Fiyat: ${car.sellingprice} $ | ${car.body} | ${car.transmission}<br>
+                  KM: ${car.odometer} | Renk: ${car.color} | İç: ${car.interior}
+                </div>`;
+            });
+            document.getElementById("recommendations").innerHTML = recHtml;
+          });
+
         document.getElementById("detailModal").style.display = "block";
       }
 
