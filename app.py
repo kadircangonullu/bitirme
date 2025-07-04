@@ -5,6 +5,7 @@ import pandas as pd
 import joblib
 import sqlite3
 import os
+import requests
 
 app = Flask(__name__)
 app.secret_key = 'secret-key'  # oturum için
@@ -174,6 +175,23 @@ def account():
     return render_template("account.html", username=session['username'], predictions=predictions)
 
 
+def fetch_car_image(car_name):
+    api_key = "042fe547412ec396f00e07c5fb3c1cdafc67804d6fd8bb4704d4d5e7cd1f0a12"
+    params = {
+        "q": car_name + " car",
+        "tbm": "isch",
+        "ijn": "0",
+        "api_key": api_key
+    }
+
+    response = requests.get("https://serpapi.com/search.json", params=params)
+    data = response.json()
+
+    try:
+        first_image_url = data['images_results'][0]['original']
+        return first_image_url
+    except (KeyError, IndexError):
+        return "/static/default_car.jpg"  # fallback image
 
 @app.route('/similar')
 def similar():
@@ -185,10 +203,15 @@ def similar():
     upper = predicted_price * 1.1
 
     similar = df[(df['sellingprice'] >= lower) & (df['sellingprice'] <= upper)].head(10)
+    
+    cars = similar.to_dict(orient="records")
+    for car in cars:
+        name = f"{car['year']} {car['make']} {car['model']}"
+        car['image_url'] = fetch_car_image(name)
 
     return render_template("similar_cars.html",
                            prediction=predicted_price,
-                           cars=similar.to_dict(orient="records"))
+                           cars=cars)
 
 @app.route('/api/similar_for_price/<float:price>')
 def similar_for_price(price):
