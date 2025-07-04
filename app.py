@@ -154,16 +154,25 @@ def account():
     predictions = []
     for row in rows:
         try:
-            data_dict = json.loads(row[1])  # ← Burada str -> dict
-        except json.JSONDecodeError:
-            data_dict = {}
-        predictions.append({
-            "price": float(row[0]),
-            "data": data_dict,
-            "timestamp": row[2]
-        })
+            data_dict = json.loads(row[1])
+            price = row[0]
+
+            # Benzer araçları filtrele (±%10 fiyat aralığı)
+            lower = price * 0.9
+            upper = price * 1.1
+            similar_cars = df[(df['sellingprice'] >= lower) & (df['sellingprice'] <= upper)].head(3)
+
+            predictions.append({
+                "price": price,
+                "data": data_dict,
+                "timestamp": row[2],
+                "similars": similar_cars.to_dict(orient="records")
+            })
+        except Exception as e:
+            print("Hatalı kayıt atlandı:", e)
 
     return render_template("account.html", username=session['username'], predictions=predictions)
+
 
 
 @app.route('/similar')
@@ -180,6 +189,20 @@ def similar():
     return render_template("similar_cars.html",
                            prediction=predicted_price,
                            cars=similar.to_dict(orient="records"))
+
+@app.route('/api/similar_for_price/<float:price>')
+def similar_for_price(price):
+    if 'username' not in session:
+        return {"error": "Giriş yapılmamış."}, 401
+
+    lower = price * 0.9
+    upper = price * 1.1
+
+    similar = df[(df['sellingprice'] >= lower) & (df['sellingprice'] <= upper)].head(10)
+
+    # JSON’a uygun hale getir
+    results = similar[["year", "make", "model", "sellingprice", "body", "transmission", "odometer", "color", "interior"]]
+    return results.to_dict(orient="records")
 
 
 @app.route('/change_password', methods=['POST'])

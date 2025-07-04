@@ -65,27 +65,33 @@
             <td>{{ pred.timestamp }}</td>
             <td>{{ pred.price }} $</td>
             <td>
-              <button 
+              <button
                 class="btn-details"
-                data-car="{{ pred.data | tojson | forceescape }}"
-                data-price="{{ pred.price }}"
-                onclick="showPredictionModal(this)">
+                onclick="showPredictionModal('{{ loop.index0 }}')"
+              >
                 Detaylar
               </button>
             </td>
           </tr>
+          <script type="application/json" id="data-{{ loop.index0 }}">
+            {{ {"data": pred.data, "similars": pred.similars, "price": pred.price} | tojson }}
+          </script>
           {% endfor %}
         </tbody>
       </table>
       {% else %}
       <p>Henüz bir tahmin yapmadın.</p>
-      {% endif %} {% with messages = get_flashed_messages() %} {% if messages %}
-      <ul style="color: red">
-        {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %}
-      </ul>
-      {% endif %} {% endwith %}
+      {% endif %}
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul style="color: red">
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      {% endwith %}
 
       <div class="password-form">
         <h3>Şifre Değiştir</h3>
@@ -99,57 +105,59 @@
       </div>
     </div>
 
+    <!-- Modal -->
     <div id="detailModal" class="modal">
       <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h3 id="modalTitle">Tahmin Detayı</h3>
         <div id="modalBody"></div>
-        <div id="recommendations"></div>
       </div>
     </div>
 
+    <!-- Benzer araçlar da dahil edilmiş modal -->
     <script>
-      function showPredictionModal(button) {
-        const raw = button.dataset.car;
-        const data = JSON.parse(raw.replace(/&quot;/g, '"'));
-        const price = parseFloat(button.dataset.price);
-
-        document.getElementById("modalTitle").innerText = `Tahmini Fiyat: ${price} $`;
-
-        let html = "";
-        for (const [key, value] of Object.entries(data)) {
-          html += `<p><strong>${key}:</strong> ${value}</p>`;
+        function closeModal() {
+          document.getElementById("detailModal").style.display = "none";
         }
-        document.getElementById("modalBody").innerHTML = html;
 
-        fetch(`/api/similar_for_price/${price}`)
-          .then(res => res.json())
-          .then(similar => {
-            let recHtml = '<h4>Önerilen Benzer Araçlar</h4>';
-            similar.forEach(car => {
-              recHtml += `
-                <div style="margin-bottom:12px;padding:8px;border-bottom:1px solid #ccc">
-                  <strong>${car.year} ${car.make} ${car.model}</strong><br>
-                  Fiyat: ${car.sellingprice} $ | ${car.body} | ${car.transmission}<br>
-                  KM: ${car.odometer} | Renk: ${car.color} | İç: ${car.interior}
-                </div>`;
+        // Ekrandaki herhangi bir boş alana tıklanırsa modal kapansın:
+        window.onclick = function (event) {
+          const modal = document.getElementById("detailModal");
+          if (event.target === modal) {
+            modal.style.display = "none";
+          }
+        };
+      function showPredictionModal(index) {
+        try {
+          const scriptTag = document.getElementById("data-" + index);
+          const jsonData = JSON.parse(scriptTag.textContent.trim());
+          const data = jsonData.data;
+          const similars = jsonData.similars || [];
+          const price = jsonData.price;
+
+          document.getElementById("modalTitle").innerText = `Tahmini Fiyat: ${price} $`;
+
+          let html = "<h4>Girdi Detayları:</h4>";
+          for (const [key, value] of Object.entries(data)) {
+            html += `<p><strong>${key}:</strong> ${value}</p>`;
+          }
+
+          if (similars.length > 0) {
+            html += "<h4 style='margin-top:20px'>Benzer Araçlar:</h4><ul>";
+            similars.forEach(car => {
+              html += `<li>${car.year} ${car.make} ${car.model} - ${car.sellingprice} $</li>`;
             });
-            document.getElementById("recommendations").innerHTML = recHtml;
-          });
+            html += "</ul>";
+          } else {
+            html += "<p><em>Benzer araç bulunamadı.</em></p>";
+          }
 
-        document.getElementById("detailModal").style.display = "block";
-      }
-
-      function closeModal() {
-        document.getElementById("detailModal").style.display = "none";
-      }
-
-      window.onclick = function (event) {
-        const modal = document.getElementById("detailModal");
-        if (event.target == modal) {
-          modal.style.display = "none";
+          document.getElementById("modalBody").innerHTML = html;
+          document.getElementById("detailModal").style.display = "block";
+        } catch (e) {
+          alert("Detaylar yüklenemedi: " + e);
         }
-      };
+      }
     </script>
   </body>
 </html>
