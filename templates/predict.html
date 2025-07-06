@@ -41,14 +41,19 @@
   <body>
     <nav>
       <div class="logo">
-        <img src="/static/logo.png" alt="logo" height="24" />
-        SmartCar AI
+        <img src="/static/logo.png" alt="logo" height="48" />
+        The Cars Web
       </div>
       <div class="nav-links">
         <a href="{{ url_for('index') }}">🏠 Anasayfa</a>
         <a href="{{ url_for('predict') }}">📊 Tahmin</a>
         <a href="{{ url_for('account') }}">👤 Hesabım</a>
         <a href="{{ url_for('logout') }}">🚪 Çıkış</a>
+        <a href="#" id="toggle-dark-btn">🌙</a>
+        <select class="lang-switcher" onchange="changeLang(this.value)">
+          <option value="tr">TR</option>
+          <option value="en">EN</option>
+        </select>
       </div>
     </nav>
 
@@ -112,5 +117,24 @@
       </div>
       {% endif %}
     </div>
+    <footer>
+      <p>&copy; 2025 Kadir Can Gonullu. All Rights Reserved.</p>
+    </footer>
+    <script>
+      const toggleBtn = document.getElementById("toggle-dark-btn");
+      const currentMode = localStorage.getItem("theme");
+
+      if (currentMode === "dark") {
+        document.body.classList.add("dark-mode");
+        toggleBtn.textContent = "☀️";
+      }
+
+      toggleBtn.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        const isDark = document.body.classList.contains("dark-mode");
+        toggleBtn.textContent = isDark ? "☀️" : "🌙";
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+      });
+    </script>
   </body>
 </html>

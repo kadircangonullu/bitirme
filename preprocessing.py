@@ -1,5 +1,3 @@
-# preprocessing.py
-
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -8,18 +6,18 @@ from sklearn.compose import ColumnTransformer
 
 
 def load_and_clean_data(filepath):
-    df = pd.read_csv(filepath, on_bad_lines='skip')  # problemli satırları atla
+    df = pd.read_csv(filepath, on_bad_lines='skip')  # problematic rows will be skipped
 
-    # Gereksiz sütunları kaldır
+    # Drop unnecessary columns
     df.drop(columns=["vin", "saledate", "seller"], inplace=True, errors="ignore")
 
-    # Hedef sütun eksikse o satırı at
+    # If target column is missing, drop that row
     df.dropna(subset=["sellingprice"], inplace=True)
 
-    # Genel eksik verileri kaldır
+    # Drop all other missing values
     df.dropna(inplace=True)
 
-    # Hedef ve girdileri ayır
+    # Separate target and features
     y = df["sellingprice"]
     X = df.drop(columns=["sellingprice", "mmr"], errors="ignore")
 

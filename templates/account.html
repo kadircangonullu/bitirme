@@ -36,13 +36,19 @@
   <body>
     <nav>
       <div class="logo">
-        <img src="/static/logo.png" alt="logo" height="24" />
-        SmartCar AI
+        <img src="/static/logo.png" alt="logo" height="48" />
+        The Cars Web
       </div>
       <div class="nav-links">
         <a href="{{ url_for('index') }}">🏠 Anasayfa</a>
         <a href="{{ url_for('predict') }}">📊 Tahmin</a>
+        <a href="{{ url_for('account') }}">👤 Hesabım</a>
         <a href="{{ url_for('logout') }}">🚪 Çıkış</a>
+        <a href="#" id="toggle-dark-btn">🌙</a>
+        <select class="lang-switcher" onchange="changeLang(this.value)">
+          <option value="tr">TR</option>
+          <option value="en">EN</option>
+        </select>
       </div>
     </nav>
 
@@ -81,17 +87,13 @@
       </table>
       {% else %}
       <p>Henüz bir tahmin yapmadın.</p>
-      {% endif %}
-
-      {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul style="color: red">
-          {% for message in messages %}
-          <li>{{ message }}</li>
-          {% endfor %}
-        </ul>
-        {% endif %}
-      {% endwith %}
+      {% endif %} {% with messages = get_flashed_messages() %} {% if messages %}
+      <ul style="color: red">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %} {% endwith %}
 
       <div class="password-form">
         <h3>Şifre Değiştir</h3>
@@ -114,19 +116,19 @@
       </div>
     </div>
 
-    <!-- Benzer araçlar da dahil edilmiş modal -->
+    <!-- Included similar cars Modal -->
     <script>
-        function closeModal() {
-          document.getElementById("detailModal").style.display = "none";
-        }
+      function closeModal() {
+        document.getElementById("detailModal").style.display = "none";
+      }
 
-        // Ekrandaki herhangi bir boş alana tıklanırsa modal kapansın:
-        window.onclick = function (event) {
-          const modal = document.getElementById("detailModal");
-          if (event.target === modal) {
-            modal.style.display = "none";
-          }
-        };
+      // Anywhere in the document, if the user clicks outside of the modal, close it:
+      window.onclick = function (event) {
+        const modal = document.getElementById("detailModal");
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      };
       function showPredictionModal(index) {
         try {
           const scriptTag = document.getElementById("data-" + index);
@@ -135,29 +137,47 @@
           const similars = jsonData.similars || [];
           const price = jsonData.price;
 
-          document.getElementById("modalTitle").innerText = `Tahmini Fiyat: ${price} $`;
+          document.getElementById(
+            "modalTitle"
+          ).innerText = `Estimated price: ${price} $`;
 
-          let html = "<h4>Girdi Detayları:</h4>";
+          let html = "<h4>Detail of input:</h4>";
           for (const [key, value] of Object.entries(data)) {
             html += `<p><strong>${key}:</strong> ${value}</p>`;
           }
 
           if (similars.length > 0) {
             html += "<h4 style='margin-top:20px'>Benzer Araçlar:</h4><ul>";
-            similars.forEach(car => {
+            similars.forEach((car) => {
               html += `<li>${car.year} ${car.make} ${car.model} - ${car.sellingprice} $</li>`;
             });
             html += "</ul>";
           } else {
-            html += "<p><em>Benzer araç bulunamadı.</em></p>";
+            html += "<p><em>Similar Cars Not Found</em></p>";
           }
 
           document.getElementById("modalBody").innerHTML = html;
           document.getElementById("detailModal").style.display = "block";
         } catch (e) {
-          alert("Detaylar yüklenemedi: " + e);
+          alert("Details Could Not Be Loaded: " + e);
         }
       }
+    </script>
+    <script>
+      const toggleBtn = document.getElementById("toggle-dark-btn");
+      const currentMode = localStorage.getItem("theme");
+
+      if (currentMode === "dark") {
+        document.body.classList.add("dark-mode");
+        toggleBtn.textContent = "☀️";
+      }
+
+      toggleBtn.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        const isDark = document.body.classList.contains("dark-mode");
+        toggleBtn.textContent = isDark ? "☀️" : "🌙";
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+      });
     </script>
   </body>
 </html>

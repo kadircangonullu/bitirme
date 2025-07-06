@@ -7,51 +7,51 @@ from sklearn.pipeline import Pipeline
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from preprocessing import load_and_clean_data, preprocess_data, split_data
 
-# Veriyi yükle
+# Upload and clean data
 df = pd.read_csv("car_prices.csv", on_bad_lines='skip')
-df.columns = df.columns.str.strip().str.lower()  # sütunları temizle
+df.columns = df.columns.str.strip().str.lower()  # Clean column names
 
-# Gerekli sütunlar
+# Required columns
 selected_columns = ["year", "make", "model", "trim", "body", "transmission", "condition",
                     "odometer", "color", "interior", "mmr", "sellingprice"]
 
-# Hata kontrolü
+# Error checking
 for col in selected_columns:
     if col not in df.columns:
-        raise ValueError(f"Sütun eksik: {col}")
+        raise ValueError(f"Column missing: {col}")
 
-# Veri seçimi ve temizlik
+# Data selection and cleaning
 df = df[selected_columns].dropna().head(40000)
 X = df.drop(columns=["sellingprice"])
 y = df["sellingprice"]
 
-# Ön işleme ve veri bölme
+# Preprocessing and splitting
 preprocessor, _, _ = preprocess_data(X)
 X_train, X_test, y_train, y_test = split_data(X, y)
 
-# Model tanımı
+# Model definition
 model = xgb.XGBRegressor(n_estimators=50, max_depth=8, random_state=42)
 
-# Pipeline oluştur
+# Create pipeline
 pipeline = Pipeline([
     ("preprocess", preprocessor),
     ("regressor", model)
 ])
 
-# Eğit
+# Train
 pipeline.fit(X_train, y_train)
 
-# Performans değerlendirme
+# Performance evaluation
 y_pred = pipeline.predict(X_test)
 mae = mean_absolute_error(y_test, y_pred)
 rmse = mean_squared_error(y_test, y_pred) ** 0.5
 r2 = r2_score(y_test, y_pred)
 
-print("Model Performansı:")
+print("Model Performance:")
 print(f"MAE: {mae:.2f}")
 print(f"RMSE: {rmse:.2f}")
 print(f"R^2 Score: {r2:.4f}")
 
-# Kaydet
+# Save
 joblib.dump((pipeline, X.columns.tolist()), "car_price_model.pkl")
-print("Model başarıyla kaydedildi: car_price_model.pkl")
+print("Model successfully saved: car_price_model.pkl")
