@@ -135,7 +135,7 @@ The dataset includes over 100,000 vehicle records with features such as:
 
 ## 🙏 Acknowledgements
 
-Special thanks to the developers and contributors of open-source libraries such as Scikit-learn, Flask, and XGBoost. Also, credit to the [OpenAI ChatGPT](https://openai.com/chatgpt) platform for assistance in project ideation and documentation.
+Special thanks to the developers and contributors of open-source libraries such as Scikit-learn, Flask, and XGBoost.
 
 ---
 
